@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Настройки - FX-АСУБАНК</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/shell.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/tables.css">
+<link rel="stylesheet" href="css/views.css">
+</head>
+<body data-page="settings">
+
+<div class="app-shell">
+  <aside class="sidebar">
+    <a class="side-logo" href="dashboard-trader.html">
+      <span class="brand-mark small">
+        <span class="brand-mark-fx">FX</span>
+        <span class="brand-mark-dot"></span>
+      </span>
+      <span class="side-logo-text">
+        <span class="side-logo-1">АСУБАНК</span>
+        <span class="side-logo-2">FX-сделки</span>
+      </span>
+    </a>
+
+    <div class="side-search">
+      <input type="text" placeholder="Поиск сделки, контрагента...">
+      <kbd>⌘ K</kbd>
+    </div>
+
+    <nav class="side-nav">
+      <div class="side-nav-section">Работа</div>
+      <a class="side-nav-link" href="#" data-page="dashboard"><span class="side-nav-icon">◉</span><span>Дашборд</span></a>
+      <a class="side-nav-link" href="deals.html" data-page="deals"><span class="side-nav-icon">≡</span><span>Сделки</span><span class="side-nav-count">12</span></a>
+      <a class="side-nav-link" href="deal-new.html" data-page="deal-new" data-roles="trader"><span class="side-nav-icon">+</span><span>Новая сделка</span></a>
+      <a class="side-nav-link" href="queue.html" data-page="queue" data-roles="positioner"><span class="side-nav-icon">⏵</span><span>Очередь</span><span class="side-nav-count">2</span></a>
+      <a class="side-nav-link" href="positions.html" data-page="positions" data-roles="positioner"><span class="side-nav-icon">▦</span><span>Позиции</span></a>
+      <a class="side-nav-link" href="quotes.html" data-page="quotes" data-roles="trader,positioner"><span class="side-nav-icon">↯</span><span>Котировки</span></a>
+
+      <div class="side-nav-section">Справочники</div>
+      <a class="side-nav-link" href="counterparties.html" data-page="counterparties"><span class="side-nav-icon">⚭</span><span>Контрагенты</span></a>
+      <a class="side-nav-link" href="accounts.html" data-page="accounts"><span class="side-nav-icon">⊟</span><span>Счета банка</span></a>
+
+      <div class="side-nav-section">Прочее</div>
+      <a class="side-nav-link" href="audit.html" data-page="audit"><span class="side-nav-icon">◌</span><span>Журнал аудита</span></a>
+      <a class="side-nav-link" href="reports.html" data-page="reports"><span class="side-nav-icon">▤</span><span>Отчеты</span></a>
+      <a class="side-nav-link" href="notifications.html" data-page="notifications"><span class="side-nav-icon">◔</span><span>Уведомления</span><span class="side-nav-count">3</span></a>
+      <a class="side-nav-link" href="settings.html" data-page="settings"><span class="side-nav-icon">⚙</span><span>Настройки</span></a>
+    </nav>
+
+    <div class="side-pulse">
+      <div class="side-pulse-h">
+        <span class="side-pulse-dot"></span>
+        <span>Лента курсов</span>
+      </div>
+      <div class="side-pulse-list">
+        <div class="side-pulse-row"><span class="side-pulse-pair">USD/RUB</span><span class="side-pulse-val">92.4732</span><span class="side-pulse-d up">▲ 0.04</span></div>
+        <div class="side-pulse-row"><span class="side-pulse-pair">EUR/RUB</span><span class="side-pulse-val">98.4612</span><span class="side-pulse-d down">▼ 0.02</span></div>
+        <div class="side-pulse-row"><span class="side-pulse-pair">CNY/RUB</span><span class="side-pulse-val">12.7421</span><span class="side-pulse-d up">▲ 0.02</span></div>
+        <div class="side-pulse-row"><span class="side-pulse-pair">GBP/RUB</span><span class="side-pulse-val">116.4831</span><span class="side-pulse-d up">▲ 0.07</span></div>
+        <div class="side-pulse-row"><span class="side-pulse-pair">CHF/RUB</span><span class="side-pulse-val">105.2105</span><span class="side-pulse-d down">▼ 0.02</span></div>
+      </div>
+    </div>
+
+    <div class="side-user">
+      <div class="side-user-av" id="side-user-av">?</div>
+      <div class="side-user-info">
+        <div class="side-user-name" id="side-user-name">-</div>
+        <div class="side-user-role" id="side-user-role">-</div>
+      </div>
+      <button class="icon-btn" title="Выход" data-logout>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4">
+          <path d="M9 3h3a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H9"/>
+          <path d="M6 5l3 3-3 3"/>
+          <path d="M9 8H2"/>
+        </svg>
+      </button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-l">
+        <button class="icon-btn" title="Назад" data-back>
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 3l-5 5 5 5"/></svg>
+        </button>
+        <nav class="breadcrumbs">
+<span class="crumb-cur">Настройки</span>
+        </nav>
+      </div>
+      <div class="topbar-r">
+        <div class="topbar-rates">
+          <span class="topbar-rates-h">Курсы ЦБ</span>
+          <span class="topbar-rate"><span class="r-pair">USD/RUB</span> <span class="r-val mono">92.4732</span> <span class="r-delta up">▲ 0.04%</span></span>
+          <span class="topbar-rate"><span class="r-pair">EUR/RUB</span> <span class="r-val mono">98.4612</span> <span class="r-delta down">▼ 0.02%</span></span>
+          <span class="topbar-rate"><span class="r-pair">CNY/RUB</span> <span class="r-val mono">12.7421</span> <span class="r-delta up">▲ 0.02%</span></span>
+        </div>
+        <button class="icon-btn-lg" title="Уведомления" data-go="notifications.html">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4">
+            <path d="M3 6.5a5 5 0 1 1 10 0v3l1 1.5H2l1-1.5z"/>
+            <path d="M6.5 13a1.5 1.5 0 0 0 3 0"/>
+          </svg>
+          <span class="badge">3</span>
+        </button>
+      </div>
+    </header>
+
+    <section class="content">
+<div class="page-header">
+  <div>
+    <div class="page-eyebrow">Настройки / Профиль</div>
+    <h1 class="page-title">Настройки</h1>
+    <p class="page-sub">Профиль пользователя, предпочтения и параметры рабочего места.</p>
+  </div>
+</div>
+
+<div class="stack">
+    <div class="card">
+      <div class="card-h"><h3>Профиль</h3></div>
+      <div class="card-b">
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px">
+          <div class="side-user-av" style="width:64px;height:64px;font-size:20px" id="settings-avatar">??</div>
+          <div>
+            <div style="font-family:var(--f-display);font-size:24px;letter-spacing:-0.01em" id="settings-name">-</div>
+            <div class="muted" style="font-family:var(--f-mono);font-size:12px;text-transform:uppercase;letter-spacing:0.1em" id="settings-role-dept">-</div>
+          </div>
+          <button class="btn ghost" style="margin-left:auto" data-toast="Смена аватара|Откроется загрузчик изображения.|info">Сменить фото</button>
+        </div>
+        <div class="form-grid">
+          <div class="form-row"><label class="form-label">Логин</label><input class="form-input mono" value="i.smirnov" readonly id="settings-login"></div>
+          <div class="form-row"><label class="form-label">Email</label><input class="form-input" value="i.smirnov@asubank.local"></div>
+          <div class="form-row"><label class="form-label">Телефон</label><input class="form-input mono" value="+7 495 555-04-12"></div>
+          <div class="form-row"><label class="form-label">Подразделение</label><input class="form-input" value="FX-деск" readonly id="settings-dept"></div>
+        </div>
+        <div style="margin-top:16px">
+          <button class="btn accent" data-toast="Профиль сохранен|Запрос имитирован.|success">Сохранить</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><h3>Безопасность</h3></div>
+      <div class="card-b">
+        <div class="form-grid">
+          <div class="form-row"><label class="form-label">Текущий пароль</label><input class="form-input" type="password"></div>
+          <div class="form-row"><label class="form-label">Новый пароль</label><input class="form-input" type="password"></div>
+        </div>
+        <div style="margin-top:16px;display:flex;gap:8px">
+          <button class="btn" data-toast="Пароль изменен|(имитация)|info">Сменить пароль</button>
+          <button class="btn ghost" data-toast="Сеансы|Все сторонние сеансы будут завершены.|warn">Завершить другие сеансы</button>
+        </div>
+      </div>
+    </div>
+</div>
+
+<script>
+// Populate profile by current role
+(function () {
+  const role = (window.fxRole && window.fxRole.get()) || 'trader';
+  const map = {
+    trader:     { name: 'Илья Смирнов',   login: 'i.smirnov',  dept: 'FX-деск',     ini: 'ИС', email: 'i.smirnov@asubank.local',  phone: '+7 495 555-04-12', roleLabel: 'Трейдер' },
+    positioner: { name: 'Софья Борисова', login: 's.borisova', dept: 'Казначейство', ini: 'СБ', email: 's.borisova@asubank.local', phone: '+7 495 555-04-22', roleLabel: 'Позиционер' },
+    auditor:    { name: 'Глеб Павлюк',    login: 'g.pavlyuk',  dept: 'Внутр. аудит', ini: 'ГП', email: 'g.pavlyuk@asubank.local',  phone: '+7 495 555-04-77', roleLabel: 'Аудитор' },
+  };
+  const u = map[role];
+  document.getElementById('settings-avatar').textContent = u.ini;
+  document.getElementById('settings-name').textContent = u.name;
+  document.getElementById('settings-role-dept').textContent = u.roleLabel + ' · ' + u.dept;
+  document.getElementById('settings-login').value = u.login;
+  document.getElementById('settings-dept').value = u.dept;
+  const inputs = document.querySelectorAll('.form-input');
+  inputs.forEach(i => {
+    if (i.value && i.value.includes('@asubank.local')) i.value = u.email;
+    if (i.value && i.value.startsWith('+7 495 555-04-')) i.value = u.phone;
+  });
+})();
+</script>
+
+    </section>
+  </main>
+</div>
+
+<div id="toast-stack" class="toast-stack"></div>
+<div id="modal-mount"></div>
+
+<script src="js/app.js"></script>
+</body>
+</html>

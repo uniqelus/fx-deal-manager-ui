@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Вход - FX-АСУБАНК</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/login.css">
+<link rel="stylesheet" href="css/components.css">
+</head>
+<body data-page="login">
+
+<div class="login-screen">
+  <div class="login-brand">
+    <div class="brand-mark">
+      <span class="brand-mark-fx">FX</span>
+      <span class="brand-mark-dot"></span>
+    </div>
+
+    <div class="brand-headline">
+      <span class="brand-h-line">Подсистема</span>
+      <span class="brand-h-line">обработки</span>
+      <span class="brand-h-line">FX-сделок</span>
+    </div>
+
+    <div class="brand-bg-grid"></div>
+  </div>
+
+  <div class="login-pane">
+<div class="login-card">
+      <h1 class="login-title">Добро пожаловать.</h1>
+      <p class="login-sub">Войдите, выбрав свою роль.</p>
+
+      <div class="form-grid">
+        <div class="form-row">
+          <label class="form-label">Логин</label>
+          <input class="form-input" type="text" placeholder="Введите логин" autocomplete="off">
+        </div>
+        <div class="form-row">
+          <label class="form-label">Пароль</label>
+          <input class="form-input" type="password" placeholder="Введите пароль">
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label class="form-label">Роль</label>
+        <div class="role-grid">
+          <button class="role-btn" data-role-select="trader">
+            <div class="role-num">01</div>
+            <div class="role-body">
+              <div class="role-name">Трейдер</div>
+              <div class="role-desc">Создание, редактирование сделок, запрос котировок</div>
+            </div>
+            <div class="role-arrow">→</div>
+          </button>
+          <button class="role-btn" data-role-select="positioner">
+            <div class="role-num">02</div>
+            <div class="role-body">
+              <div class="role-name">Позиционер</div>
+              <div class="role-desc">Согласование сделок, контроль позиций и лимитов</div>
+            </div>
+            <div class="role-arrow">→</div>
+          </button>
+          <button class="role-btn" data-role-select="auditor">
+            <div class="role-num">03</div>
+            <div class="role-body">
+              <div class="role-name">Аудитор</div>
+              <div class="role-desc">Просмотр журнала аудита и отчетов</div>
+            </div>
+            <div class="role-arrow">→</div>
+          </button>
+        </div>
+      </div>
+
+      <div class="login-helpers">
+        <button class="link-btn" data-toast="Восстановление пароля|Свяжитесь с администратором ИБ: ib@asubank.local|info">Забыли пароль?</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="toast-stack" class="toast-stack"></div>
+<div id="modal-mount"></div>
+
+<script src="js/app.js"></script>
+</body>
+</html>

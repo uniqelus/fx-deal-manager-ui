@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Котировки - FX-АСУБАНК</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/shell.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/tables.css">
+<link rel="stylesheet" href="css/views.css">
+</head>
+<body data-page="quotes">
+
+<div class="app-shell">
+  <aside class="sidebar">
+    <a class="side-logo" href="dashboard-trader.html">
+      <span class="brand-mark small">
+        <span class="brand-mark-fx">FX</span>
+        <span class="brand-mark-dot"></span>
+      </span>
+      <span class="side-logo-text">
+        <span class="side-logo-1">АСУБАНК</span>
+        <span class="side-logo-2">FX-сделки</span>
+      </span>
+    </a>
+
+    <div class="side-search">
+      <input type="text" placeholder="Поиск сделки, контрагента...">
+      <kbd>⌘ K</kbd>
+    </div>
+
+    <nav class="side-nav">
+      <div class="side-nav-section">Работа</div>
+      <a class="side-nav-link" href="#" data-page="dashboard"><span class="side-nav-icon">◉</span><span>Дашборд</span></a>
+      <a class="side-nav-link" href="deals.html" data-page="deals"><span class="side-nav-icon">≡</span><span>Сделки</span><span class="side-nav-count">12</span></a>
+      <a class="side-nav-link" href="deal-new.html" data-page="deal-new" data-roles="trader"><span class="side-nav-icon">+</span><span>Новая сделка</span></a>
+      <a class="side-nav-link" href="queue.html" data-page="queue" data-roles="positioner"><span class="side-nav-icon">⏵</span><span>Очередь</span><span class="side-nav-count">2</span></a>
+      <a class="side-nav-link" href="positions.html" data-page="positions" data-roles="positioner"><span class="side-nav-icon">▦</span><span>Позиции</span></a>
+      <a class="side-nav-link" href="quotes.html" data-page="quotes" data-roles="trader,positioner"><span class="side-nav-icon">↯</span><span>Котировки</span></a>
+
+      <div class="side-nav-section">Справочники</div>
+      <a class="side-nav-link" href="counterparties.html" data-page="counterparties"><span class="side-nav-icon">⚭</span><span>Контрагенты</span></a>
+      <a class="side-nav-link" href="accounts.html" data-page="accounts"><span class="side-nav-icon">⊟</span><span>Счета банка</span></a>
+
+      <div class="side-nav-section">Прочее</div>
+      <a class="side-nav-link" href="audit.html" data-page="audit"><span class="side-nav-icon">◌</span><span>Журнал аудита</span></a>
+      <a class="side-nav-link" href="reports.html" data-page="reports"><span class="side-nav-icon">▤</span><span>Отчеты</span></a>
+      <a class="side-nav-link" href="notifications.html" data-page="notifications"><span class="side-nav-icon">◔</span><span>Уведомления</span><span class="side-nav-count">3</span></a>
+      <a class="side-nav-link" href="settings.html" data-page="settings"><span class="side-nav-icon">⚙</span><span>Настройки</span></a>
+    </nav>
+
+    <div class="side-pulse">
+      <div class="side-pulse-h">
+        <span class="side-pulse-dot"></span>
+        <span>Лента курсов</span>
+      </div>
+      <div class="side-pulse-list">
+        <div class="side-pulse-row"><span class="side-pulse-pair">USD/RUB</span><span class="side-pulse-val">92.4732</span><span class="side-pulse-d up">▲ 0.04</span></div>
+        <div class="side-pulse-row"><span class="side-pulse-pair">EUR/RUB</span><span class="side-pulse-val">98.4612</span><span class="side-pulse-d down">▼ 0.02</span></div>
+        <div class="side-pulse-row"><span class="side-pulse-pair">CNY/RUB</span><span class="side-pulse-val">12.7421</span><span class="side-pulse-d up">▲ 0.02</span></div>
+        <div class="side-pulse-row"><span class="side-pulse-pair">GBP/RUB</span><span class="side-pulse-val">116.4831</span><span class="side-pulse-d up">▲ 0.07</span></div>
+        <div class="side-pulse-row"><span class="side-pulse-pair">CHF/RUB</span><span class="side-pulse-val">105.2105</span><span class="side-pulse-d down">▼ 0.02</span></div>
+      </div>
+    </div>
+
+    <div class="side-user">
+      <div class="side-user-av" id="side-user-av">?</div>
+      <div class="side-user-info">
+        <div class="side-user-name" id="side-user-name">-</div>
+        <div class="side-user-role" id="side-user-role">-</div>
+      </div>
+      <button class="icon-btn" title="Выход" data-logout>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4">
+          <path d="M9 3h3a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H9"/>
+          <path d="M6 5l3 3-3 3"/>
+          <path d="M9 8H2"/>
+        </svg>
+      </button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-l">
+        <button class="icon-btn" title="Назад" data-back>
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 3l-5 5 5 5"/></svg>
+        </button>
+        <nav class="breadcrumbs">
+<span class="crumb-cur">Котировки</span>
+        </nav>
+      </div>
+      <div class="topbar-r">
+        <div class="topbar-rates">
+          <span class="topbar-rates-h">Курсы ЦБ</span>
+          <span class="topbar-rate"><span class="r-pair">USD/RUB</span> <span class="r-val mono">92.4732</span> <span class="r-delta up">▲ 0.04%</span></span>
+          <span class="topbar-rate"><span class="r-pair">EUR/RUB</span> <span class="r-val mono">98.4612</span> <span class="r-delta down">▼ 0.02%</span></span>
+          <span class="topbar-rate"><span class="r-pair">CNY/RUB</span> <span class="r-val mono">12.7421</span> <span class="r-delta up">▲ 0.02%</span></span>
+        </div>
+        <button class="icon-btn-lg" title="Уведомления" data-go="notifications.html">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4">
+            <path d="M3 6.5a5 5 0 1 1 10 0v3l1 1.5H2l1-1.5z"/>
+            <path d="M6.5 13a1.5 1.5 0 0 0 3 0"/>
+          </svg>
+          <span class="badge">3</span>
+        </button>
+      </div>
+    </header>
+
+    <section class="content">
+<div class="page-header">
+  <div>
+    <div class="page-eyebrow">Котировки / Live FX</div>
+    <h1 class="page-title">Котировки FX</h1>
+    <p class="page-sub">Текущие курсы ЦБ РФ и индикативные котировки маркет-мейкеров.</p>
+  </div>
+  <div class="page-actions">
+    <button class="btn" data-toast="Обновлено|Свежие котировки получены с шины.|info">↻ Обновить</button>
+    <button class="btn accent" data-toast="Запрос RFQ|Запрос на котировку отправлен 4 маркет-мейкерам (имитация).|accent">↯ Новый RFQ</button>
+  </div>
+</div>
+
+<div class="row-2">
+  <div class="card">
+    <div class="card-h"><h3>Курсы ЦБ РФ</h3><span class="card-h-sub"><span class="dot-live"></span> Обновляется каждые 5 минут</span></div>
+    <table class="tbl">
+      <thead><tr><th>Пара</th><th class="right">Mid</th><th class="right">Bid</th><th class="right">Ask</th><th class="right">Spread</th><th class="right">Δ%</th><th></th></tr></thead>
+      <tbody>
+        <tr><td class="tbl-pair">USD/RUB</td><td class="num">92.4732</td><td class="num muted">92.4521</td><td class="num muted">92.4943</td><td class="num muted">0.0422</td><td class="num up">+0.04%</td><td class="right"><button class="btn sm" data-toast="Применено|Курс USD/RUB = 92.4732 использован для новой сделки.|accent">Применить</button></td></tr>
+        <tr><td class="tbl-pair">EUR/RUB</td><td class="num">98.4612</td><td class="num muted">98.4421</td><td class="num muted">98.4803</td><td class="num muted">0.0382</td><td class="num down">-0.02%</td><td class="right"><button class="btn sm" data-toast="Применено|Курс EUR/RUB = 98.4612 использован для новой сделки.|accent">Применить</button></td></tr>
+        <tr><td class="tbl-pair">CNY/RUB</td><td class="num">12.7421</td><td class="num muted">12.7301</td><td class="num muted">12.7541</td><td class="num muted">0.0240</td><td class="num up">+0.02%</td><td class="right"><button class="btn sm" data-toast="Применено|Курс CNY/RUB = 12.7421 использован для новой сделки.|accent">Применить</button></td></tr>
+        <tr><td class="tbl-pair">GBP/RUB</td><td class="num">116.4831</td><td class="num muted">116.4400</td><td class="num muted">116.5262</td><td class="num muted">0.0862</td><td class="num up">+0.07%</td><td class="right"><button class="btn sm" data-toast="Применено|Курс GBP/RUB = 116.4831 использован для новой сделки.|accent">Применить</button></td></tr>
+        <tr><td class="tbl-pair">CHF/RUB</td><td class="num">105.2105</td><td class="num muted">105.1700</td><td class="num muted">105.2510</td><td class="num muted">0.0810</td><td class="num down">-0.02%</td><td class="right"><button class="btn sm" data-toast="Применено|Курс CHF/RUB = 105.2105 использован для новой сделки.|accent">Применить</button></td></tr>
+        <tr><td class="tbl-pair">EUR/USD</td><td class="num">1.0651</td><td class="num muted">1.0648</td><td class="num muted">1.0654</td><td class="num muted">0.0006</td><td class="num down">-0.11%</td><td class="right"><button class="btn sm" data-toast="Применено|Курс EUR/USD = 1.0651 использован для новой сделки.|accent">Применить</button></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="stack">
+    <div class="card">
+      <div class="card-h"><h3>Активные RFQ</h3><span class="card-h-sub">3 запроса</span></div>
+      <div class="card-b tight">
+        <div class="mini-list">
+          <div class="mini-row" data-toast="Q-114|Подробности RFQ - на стороне бэкенда.|info"><div class="mini-icon success">114</div><div class="mini-c"><div class="mini-t">EUR/RUB · 500 000</div><div class="mini-d">Q-114 · 4 ответа</div></div><span class="mini-r">→</span></div>
+          <div class="mini-row" data-toast="Q-113|Ожидание ответов.|warn"><div class="mini-icon warn">113</div><div class="mini-c"><div class="mini-t">USD/RUB · 1 200 000</div><div class="mini-d">Q-113 · ожидание</div></div><span class="mini-r">→</span></div>
+          <div class="mini-row" data-toast="Q-112|RFQ истёк по таймауту.|danger"><div class="mini-icon danger">112</div><div class="mini-c"><div class="mini-t">CNY/RUB · 8 500 000</div><div class="mini-d">Q-112 · истёк</div></div><span class="mini-r">→</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><h3>Маркет-мейкеры (EUR/RUB)</h3></div>
+      <div class="card-b tight">
+        <div class="mini-list">
+          <div class="mini-row"><div class="mini-icon success">SB</div><div class="mini-c"><div class="mini-t">SBER</div><div class="mini-d mono">98.4520 / 98.4810</div></div></div>
+          <div class="mini-row"><div class="mini-icon success">VT</div><div class="mini-c"><div class="mini-t">VTBR</div><div class="mini-d mono">98.4480 / 98.4830</div></div></div>
+          <div class="mini-row"><div class="mini-icon success">GZ</div><div class="mini-c"><div class="mini-t">GAZP</div><div class="mini-d mono">98.4500 / 98.4820</div></div></div>
+          <div class="mini-row"><div class="mini-icon warn">MK</div><div class="mini-c"><div class="mini-t">MKB</div><div class="mini-d mono">нет ответа</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    </section>
+  </main>
+</div>
+
+<div id="toast-stack" class="toast-stack"></div>
+<div id="modal-mount"></div>
+
+<script src="js/app.js"></script>
+</body>
+</html>

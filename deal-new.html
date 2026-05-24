@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Новая сделка - FX-АСУБАНК</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/shell.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/tables.css">
+<link rel="stylesheet" href="css/views.css">
+</head>
+<body data-page="deal-new" data-role-required="trader">
+
+<div class="app-shell">
+  <aside class="sidebar">
+    <a class="side-logo" href="dashboard-trader.html">
+      <span class="brand-mark small">
+        <span class="brand-mark-fx">FX</span>
+        <span class="brand-mark-dot"></span>
+      </span>
+      <span class="side-logo-text">
+        <span class="side-logo-1">АСУБАНК</span>
+        <span class="side-logo-2">FX-сделки</span>
+      </span>
+    </a>
+
+    <div class="side-search">
+      <input type="text" placeholder="Поиск сделки, контрагента...">
+      <kbd>⌘ K</kbd>
+    </div>
+
+    <nav class="side-nav">
+      <div class="side-nav-section">Работа</div>
+      <a class="side-nav-link" href="#" data-page="dashboard"><span class="side-nav-icon">◉</span><span>Дашборд</span></a>
+      <a class="side-nav-link" href="deals.html" data-page="deals"><span class="side-nav-icon">≡</span><span>Сделки</span><span class="side-nav-count">12</span></a>
+      <a class="side-nav-link" href="deal-new.html" data-page="deal-new" data-role-required="trader" data-roles="trader"><span class="side-nav-icon">+</span><span>Новая сделка</span></a>
+      <a class="side-nav-link" href="queue.html" data-page="queue" data-roles="positioner"><span class="side-nav-icon">⏵</span><span>Очередь</span><span class="side-nav-count">2</span></a>
+      <a class="side-nav-link" href="positions.html" data-page="positions" data-roles="positioner"><span class="side-nav-icon">▦</span><span>Позиции</span></a>
+      <a class="side-nav-link" href="quotes.html" data-page="quotes" data-roles="trader,positioner"><span class="side-nav-icon">↯</span><span>Котировки</span></a>
+
+      <div class="side-nav-section">Справочники</div>
+      <a class="side-nav-link" href="counterparties.html" data-page="counterparties"><span class="side-nav-icon">⚭</span><span>Контрагенты</span></a>
+      <a class="side-nav-link" href="accounts.html" data-page="accounts"><span class="side-nav-icon">⊟</span><span>Счета банка</span></a>
+
+      <div class="side-nav-section">Прочее</div>
+      <a class="side-nav-link" href="audit.html" data-page="audit"><span class="side-nav-icon">◌</span><span>Журнал аудита</span></a>
+      <a class="side-nav-link" href="reports.html" data-page="reports"><span class="side-nav-icon">▤</span><span>Отчеты</span></a>
+      <a class="side-nav-link" href="notifications.html" data-page="notifications"><span class="side-nav-icon">◔</span><span>Уведомления</span><span class="side-nav-count">3</span></a>
+      <a class="side-nav-link" href="settings.html" data-page="settings"><span class="side-nav-icon">⚙</span><span>Настройки</span></a>
+    </nav>
+
+    <div class="side-pulse">
+      <div class="side-pulse-h">
+        <span class="side-pulse-dot"></span>
+        <span>Лента курсов</span>
+      </div>
+      <div class="side-pulse-list">
+        <div class="side-pulse-row"><span class="side-pulse-pair">USD/RUB</span><span class="side-pulse-val">92.4732</span><span class="side-pulse-d up">▲ 0.04</span></div>
+        <div class="side-pulse-row"><span class="side-pulse-pair">EUR/RUB</span><span class="side-pulse-val">98.4612</span><span class="side-pulse-d down">▼ 0.02</span></div>
+        <div class="side-pulse-row"><span class="side-pulse-pair">CNY/RUB</span><span class="side-pulse-val">12.7421</span><span class="side-pulse-d up">▲ 0.02</span></div>
+        <div class="side-pulse-row"><span class="side-pulse-pair">GBP/RUB</span><span class="side-pulse-val">116.4831</span><span class="side-pulse-d up">▲ 0.07</span></div>
+        <div class="side-pulse-row"><span class="side-pulse-pair">CHF/RUB</span><span class="side-pulse-val">105.2105</span><span class="side-pulse-d down">▼ 0.02</span></div>
+      </div>
+    </div>
+
+    <div class="side-user">
+      <div class="side-user-av" id="side-user-av">?</div>
+      <div class="side-user-info">
+        <div class="side-user-name" id="side-user-name">-</div>
+        <div class="side-user-role" id="side-user-role">-</div>
+      </div>
+      <button class="icon-btn" title="Выход" data-logout>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4">
+          <path d="M9 3h3a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H9"/>
+          <path d="M6 5l3 3-3 3"/>
+          <path d="M9 8H2"/>
+        </svg>
+      </button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-l">
+        <button class="icon-btn" title="Назад" data-back>
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 3l-5 5 5 5"/></svg>
+        </button>
+        <nav class="breadcrumbs">
+<a href="deals.html">Сделки</a><span class="crumb-sep">/</span><span class="crumb-cur">Новая сделка</span>
+        </nav>
+      </div>
+      <div class="topbar-r">
+        <button class="icon-btn-lg" title="Уведомления" data-go="notifications.html">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4">
+            <path d="M3 6.5a5 5 0 1 1 10 0v3l1 1.5H2l1-1.5z"/>
+            <path d="M6.5 13a1.5 1.5 0 0 0 3 0"/>
+          </svg>
+          <span class="badge">3</span>
+        </button>
+      </div>
+    </header>
+
+    <section class="content">
+<div class="page-header">
+  <div>
+    <div class="page-eyebrow">Сделки / Вводная форма</div>
+    <h1 class="page-title">Новая FX-сделка</h1>
+    <p class="page-sub">Заполните параметры сделки. После отправки сделка перейдет в очередь согласования к позиционеру.</p>
+  </div>
+  <div class="page-actions">
+    <button class="btn" data-go="deals.html">← К списку</button>
+  </div>
+</div>
+
+<div class="row-side">
+  <div>
+    <section class="form-section">
+      <div class="form-section-h">
+        <span class="form-section-num">01</span>
+        <span class="form-section-t">Тип и контрагент</span>
+      </div>
+      <div class="form-section-b">
+        <div class="form-grid-3">
+          <div class="form-row">
+            <label class="form-label">Тип сделки</label>
+            <div class="radio-row">
+              <label><input type="radio" name="dealType"><div>TOD</div><div class="radio-row-sub">T+0</div></label>
+              <label><input type="radio" name="dealType"><div>TOM</div><div class="radio-row-sub">T+1</div></label>
+              <label class="on"><input type="radio" name="dealType" checked><div>SPOT</div><div class="radio-row-sub">T+2</div></label>
+              <label><input type="radio" name="dealType"><div>FORWARD</div><div class="radio-row-sub">T+N</div></label>
+            </div>
+          </div>
+          <div class="form-row">
+            <label class="form-label">Дата сделки</label>
+            <input class="form-input" type="date" value="2026-05-08">
+          </div>
+          <div class="form-row">
+            <label class="form-label">Дата валютирования</label>
+            <input class="form-input" type="date" value="2026-05-12">
+          </div>
+          <div class="form-row">
+            <label class="form-label">Регламентная дата сдачи</label>
+            <input class="form-input" type="date" value="2026-05-08">
+            <div class="form-help">При наступлении - автоматический переход в 'Отправлено'.</div>
+          </div>
+          <div class="form-row">
+            <label class="form-label">Направление</label>
+            <div class="radio-row">
+              <label class="on"><input type="radio" name="dealSide" checked><div>Покупка</div><div class="radio-row-sub">BUY</div></label>
+              <label><input type="radio" name="dealSide"><div>Продажа</div><div class="radio-row-sub">SELL</div></label>
+            </div>
+          </div>
+          <div class="form-row form-col-2">
+            <label class="form-label">Контрагент</label>
+            <input class="form-input" list="cp-list" value="VTBR - ПАО Банк ВТБ" placeholder="Начните ввод кода или наименования...">
+            <datalist id="cp-list">
+              <option value="SBER - ПАО Сбербанк">
+              <option value="VTBR - ПАО Банк ВТБ">
+              <option value="GAZP - АО Газпромбанк">
+              <option value="RAIF - АО Райффайзенбанк">
+              <option value="TBRF - АО ТБанк">
+              <option value="OPEN - ПАО Банк Открытие">
+              <option value="ALFA - АО Альфа-Банк">
+              <option value="MKB - ПАО Московский Кредитный Банк">
+              <option value="ICBC - ICBC Moscow">
+            </datalist>
+            <div class="form-help">Поиск по коду, наименованию или BIC.</div>
+          </div>
+          <div class="form-row">
+            <label class="form-label">Уникальный ключ</label>
+            <input class="form-input mono" value="auto-generated" readonly>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="form-section">
+      <div class="form-section-h">
+        <span class="form-section-num">02</span>
+        <span class="form-section-t">Валюты и суммы</span>
+      </div>
+      <div class="form-section-b">
+        <div class="form-grid-4">
+          <div class="form-row">
+            <label class="form-label">Валюта покупки</label>
+            <select class="form-select"><option>RUB</option><option selected>USD</option><option>EUR</option><option>CNY</option><option>GBP</option><option>CHF</option></select>
+          </div>
+          <div class="form-row">
+            <label class="form-label">Сумма покупки</label>
+            <div class="input-group">
+              <input class="mono" value="750 000,00" placeholder="0,00">
+              <span class="ig-suffix">USD</span>
+            </div>
+          </div>
+          <div class="form-row">
+            <label class="form-label">Валюта продажи</label>
+            <select class="form-select"><option selected>RUB</option><option>USD</option><option>EUR</option><option>CNY</option><option>GBP</option><option>CHF</option></select>
+          </div>
+          <div class="form-row">
+            <label class="form-label">Сумма продажи (расчёт)</label>
+            <div class="input-group">
+              <input class="mono" value="69 354 900,00" readonly style="color:var(--muted)">
+              <span class="ig-suffix">RUB</span>
+            </div>
+            <div class="form-help">Рассчитывается автоматически.</div>
+          </div>
+          <div class="form-row form-col-2">
+            <label class="form-label">Курс</label>
+            <div class="input-group">
+              <input class="mono" value="92.4732" placeholder="0,0000">
+              <button class="ig-suffix" style="cursor:pointer" data-toast="Запрос котировки|Запрос отправлен на маркет-мейкеров (имитация).|accent">↯ live</button>
+            </div>
+          </div>
+          <div class="form-row form-col-2">
+            <label class="form-label">Запрос котировок</label>
+            <button class="btn" style="width:100%" data-go="quotes.html">↯ Открыть панель котировок</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="form-section">
+      <div class="form-section-h">
+        <span class="form-section-num">03</span>
+        <span class="form-section-t">Платежи</span>
+      </div>
+      <div class="form-section-b">
+        <table class="tbl tbl-tight">
+          <thead>
+            <tr><th>Валюта</th><th>Сумма</th><th>Дата</th><th>Счёт НОСТРО</th><th>Направление</th><th></th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><select class="form-select"><option selected>USD</option><option>EUR</option><option>CNY</option><option>RUB</option><option>GBP</option><option>CHF</option></select></td>
+              <td><input class="form-input mono" value="750 000,00"></td>
+              <td><input class="form-input" type="date" value="2026-05-12"></td>
+              <td><select class="form-select"><option selected>30114-840-00000000123 · JPMorgan Chase, NY</option><option>30114-978-00000000456 · Deutsche Bank AG</option></select></td>
+              <td><select class="form-select"><option selected>Поступление</option><option>Списание</option></select></td>
+              <td><button class="btn sm ghost" data-toast="Удалить строку||info">×</button></td>
+            </tr>
+            <tr>
+              <td><select class="form-select"><option>USD</option><option>EUR</option><option>CNY</option><option selected>RUB</option><option>GBP</option><option>CHF</option></select></td>
+              <td><input class="form-input mono" value="69 354 900,00"></td>
+              <td><input class="form-input" type="date" value="2026-05-12"></td>
+              <td><select class="form-select"><option selected>30102-810-30000000001 · Банк России</option></select></td>
+              <td><select class="form-select"><option>Поступление</option><option selected>Списание</option></select></td>
+              <td><button class="btn sm ghost" data-toast="Удалить строку||info">×</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="margin-top:8px">
+          <button class="btn sm" data-toast="Строка платежа||info">+ Добавить платёж</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="form-section">
+      <div class="form-section-h">
+        <span class="form-section-num">04</span>
+        <span class="form-section-t">Дополнительно</span>
+      </div>
+      <div class="form-section-b">
+        <div class="form-row">
+          <label class="form-label">Комментарий</label>
+          <textarea class="form-textarea" placeholder="Произвольный комментарий к сделке (необязательно)"></textarea>
+        </div>
+      </div>
+    </section>
+
+    <div class="split" style="margin-top:20px">
+      <button class="btn" data-toast="Редактируется|Форма сохранена в статусе 'Редактируется'.|info">Сохранить (Редактируется)</button>
+      <div style="display:flex;gap:8px">
+        <button class="btn ghost" data-go="deals.html">Отмена</button>
+        <button class="btn" data-toast="Валидация|Запуск валидации полей. Логика - на бэкенде.|info">Проверить</button>
+        <button class="btn accent" data-confirm="Отправить досрочно (ранее регламентного срока)?|Статус сделки будет изменен с 'Редактируется' на 'Отправлено'. После отправки сделка попадает в сводную форму позиционера.|Отправить|accent|deals.html">Отправить досрочно →</button>
+      </div>
+    </div>
+    <div class="form-help" style="margin-top:8px;text-align:right">При наступлении регламентной даты статус 'Редактируется' меняется на 'Отправлено' автоматически.</div>
+  </div>
+
+  <div class="stack">
+    <div class="card">
+      <div class="card-h"><h3>Сводка</h3><span class="card-h-sub">предпросмотр</span></div>
+      <div class="card-b">
+        <div class="deal-hero-pair" style="font-size:40px"><span>USD</span><span class="arrow">→</span><span>RUB</span></div>
+        <div class="deal-hero-amt" style="font-size:20px;margin-top:8px">
+          <span class="mono">750 000,00</span>
+          <span class="deal-hero-amt-c">USD</span>
+        </div>
+        <div class="deal-hero-rate">по курсу <span class="mono">92.4732</span></div>
+        <hr>
+        <dl class="dl">
+          <dt>Тип</dt><dd>SPOT</dd>
+          <dt>Дата сделки</dt><dd>08.05.2026</dd>
+          <dt>Валютирование</dt><dd>12.05.2026</dd>
+          <dt>Контрагент</dt><dd>VTBR</dd>
+        </dl>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><h3>Live-котировки</h3><span class="card-h-sub"><span class="dot-live"></span> ЦБ РФ</span></div>
+      <div class="card-b tight">
+        <table class="quote-table">
+          <tbody>
+            <tr data-toast="Курс USD/RUB|Подставлено в форму: 92.4732|accent" style="cursor:pointer"><td class="qt-pair">USD/RUB</td><td class="num">92.4732</td><td class="num up">▲ 0.04%</td></tr>
+            <tr data-toast="Курс EUR/RUB|Подставлено в форму: 98.4612|accent" style="cursor:pointer"><td class="qt-pair">EUR/RUB</td><td class="num">98.4612</td><td class="num down">▼ 0.02%</td></tr>
+            <tr data-toast="Курс CNY/RUB|Подставлено в форму: 12.7421|accent" style="cursor:pointer"><td class="qt-pair">CNY/RUB</td><td class="num">12.7421</td><td class="num up">▲ 0.02%</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-h"><h3>Подсказки</h3></div>
+      <div class="card-b tight">
+        <div class="mini-list">
+          <div class="mini-row"><div class="mini-icon info">i</div><div class="mini-c"><div class="mini-t">TOD/TOM/SPOT/FORWARD</div><div class="mini-d">T+0, T+1, T+2 и форвард соответственно. Дата валютирования рассчитывается автоматически.</div></div></div>
+          <div class="mini-row"><div class="mini-icon warn">!</div><div class="mini-c"><div class="mini-t">Лимит контрагента</div><div class="mini-d">Превышение лимита блокирует отправку. Проверьте экран "Контрагенты".</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    </section>
+  </main>
+</div>
+
+<div id="toast-stack" class="toast-stack"></div>
+<div id="modal-mount"></div>
+
+<script src="js/app.js"></script>
+</body>
+</html>

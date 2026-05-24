@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Счета банка - FX-АСУБАНК</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600;9..144,700&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/base.css">
+<link rel="stylesheet" href="css/shell.css">
+<link rel="stylesheet" href="css/components.css">
+<link rel="stylesheet" href="css/tables.css">
+<link rel="stylesheet" href="css/views.css">
+</head>
+<body data-page="accounts">
+
+<div class="app-shell">
+  <aside class="sidebar">
+    <a class="side-logo" href="dashboard-trader.html">
+      <span class="brand-mark small">
+        <span class="brand-mark-fx">FX</span>
+        <span class="brand-mark-dot"></span>
+      </span>
+      <span class="side-logo-text">
+        <span class="side-logo-1">АСУБАНК</span>
+        <span class="side-logo-2">FX-сделки</span>
+      </span>
+    </a>
+
+    <div class="side-search">
+      <input type="text" placeholder="Поиск сделки, контрагента...">
+      <kbd>⌘ K</kbd>
+    </div>
+
+    <nav class="side-nav">
+      <div class="side-nav-section">Работа</div>
+      <a class="side-nav-link" href="#" data-page="dashboard"><span class="side-nav-icon">◉</span><span>Дашборд</span></a>
+      <a class="side-nav-link" href="deals.html" data-page="deals"><span class="side-nav-icon">≡</span><span>Сделки</span><span class="side-nav-count">12</span></a>
+      <a class="side-nav-link" href="deal-new.html" data-page="deal-new" data-roles="trader"><span class="side-nav-icon">+</span><span>Новая сделка</span></a>
+      <a class="side-nav-link" href="queue.html" data-page="queue" data-roles="positioner"><span class="side-nav-icon">⏵</span><span>Очередь</span><span class="side-nav-count">2</span></a>
+      <a class="side-nav-link" href="positions.html" data-page="positions" data-roles="positioner"><span class="side-nav-icon">▦</span><span>Позиции</span></a>
+      <a class="side-nav-link" href="quotes.html" data-page="quotes" data-roles="trader,positioner"><span class="side-nav-icon">↯</span><span>Котировки</span></a>
+
+      <div class="side-nav-section">Справочники</div>
+      <a class="side-nav-link" href="counterparties.html" data-page="counterparties"><span class="side-nav-icon">⚭</span><span>Контрагенты</span></a>
+      <a class="side-nav-link" href="accounts.html" data-page="accounts"><span class="side-nav-icon">⊟</span><span>Счета банка</span></a>
+
+      <div class="side-nav-section">Прочее</div>
+      <a class="side-nav-link" href="audit.html" data-page="audit"><span class="side-nav-icon">◌</span><span>Журнал аудита</span></a>
+      <a class="side-nav-link" href="reports.html" data-page="reports"><span class="side-nav-icon">▤</span><span>Отчеты</span></a>
+      <a class="side-nav-link" href="notifications.html" data-page="notifications"><span class="side-nav-icon">◔</span><span>Уведомления</span><span class="side-nav-count">3</span></a>
+      <a class="side-nav-link" href="settings.html" data-page="settings"><span class="side-nav-icon">⚙</span><span>Настройки</span></a>
+    </nav>
+
+    <div class="side-pulse">
+      <div class="side-pulse-h">
+        <span class="side-pulse-dot"></span>
+        <span>Лента курсов</span>
+      </div>
+      <div class="side-pulse-list">
+        <div class="side-pulse-row"><span class="side-pulse-pair">USD/RUB</span><span class="side-pulse-val">92.4732</span><span class="side-pulse-d up">▲ 0.04</span></div>
+        <div class="side-pulse-row"><span class="side-pulse-pair">EUR/RUB</span><span class="side-pulse-val">98.4612</span><span class="side-pulse-d down">▼ 0.02</span></div>
+        <div class="side-pulse-row"><span class="side-pulse-pair">CNY/RUB</span><span class="side-pulse-val">12.7421</span><span class="side-pulse-d up">▲ 0.02</span></div>
+        <div class="side-pulse-row"><span class="side-pulse-pair">GBP/RUB</span><span class="side-pulse-val">116.4831</span><span class="side-pulse-d up">▲ 0.07</span></div>
+        <div class="side-pulse-row"><span class="side-pulse-pair">CHF/RUB</span><span class="side-pulse-val">105.2105</span><span class="side-pulse-d down">▼ 0.02</span></div>
+      </div>
+    </div>
+
+    <div class="side-user">
+      <div class="side-user-av" id="side-user-av">?</div>
+      <div class="side-user-info">
+        <div class="side-user-name" id="side-user-name">-</div>
+        <div class="side-user-role" id="side-user-role">-</div>
+      </div>
+      <button class="icon-btn" title="Выход" data-logout>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4">
+          <path d="M9 3h3a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H9"/>
+          <path d="M6 5l3 3-3 3"/>
+          <path d="M9 8H2"/>
+        </svg>
+      </button>
+    </div>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-l">
+        <button class="icon-btn" title="Назад" data-back>
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M10 3l-5 5 5 5"/></svg>
+        </button>
+        <nav class="breadcrumbs">
+<span class="crumb-cur">Счета банка</span>
+        </nav>
+      </div>
+      <div class="topbar-r">
+        <button class="icon-btn-lg" title="Уведомления" data-go="notifications.html">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4">
+            <path d="M3 6.5a5 5 0 1 1 10 0v3l1 1.5H2l1-1.5z"/>
+            <path d="M6.5 13a1.5 1.5 0 0 0 3 0"/>
+          </svg>
+          <span class="badge">3</span>
+        </button>
+      </div>
+    </header>
+
+    <section class="content">
+<div class="page-header">
+  <div>
+    <div class="page-eyebrow">Справочник / Счета</div>
+    <h1 class="page-title">Счета банка</h1>
+    <p class="page-sub">НОСТРО-счета банка, используемые в FX-операциях. Остатки получаются из системы корреспондентских счетов по расписанию (источник уточняется).</p>
+  </div>
+  <div class="page-actions">
+    <button class="btn accent" data-toast="Обновление|Запрошены актуальные остатки и реквизиты счетов из НСИ.|accent">↻ Обновить</button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-h"><h3>НОСТРО счета</h3><span class="card-h-sub">6 счетов</span></div>
+  <table class="tbl">
+    <thead><tr><th>ID</th><th>Тип</th><th>Валюта</th><th>Номер счета</th><th>Банк</th><th class="right">Остаток</th><th>Статус</th><th></th></tr></thead>
+    <tbody>
+      <tr><td class="tbl-id">A001</td><td class="mono">NOSTRO</td><td class="mono">USD</td><td class="mono">30114-840-00000000123</td><td>JPMorgan Chase, NY</td><td class="num">18 420 000,50 USD</td><td><span class="pill approved">Активен</span></td><td class="right"><button class="btn sm ghost" data-toast="Выписка|A001|info">Выписка</button></td></tr>
+      <tr><td class="tbl-id">A002</td><td class="mono">NOSTRO</td><td class="mono">EUR</td><td class="mono">30114-978-00000000456</td><td>Deutsche Bank AG</td><td class="num">9 210 400,00 EUR</td><td><span class="pill approved">Активен</span></td><td class="right"><button class="btn sm ghost" data-toast="Выписка|A002|info">Выписка</button></td></tr>
+      <tr><td class="tbl-id">A003</td><td class="mono">NOSTRO</td><td class="mono">CNY</td><td class="mono">30114-156-00000000789</td><td>Bank of China</td><td class="num">142 000 000,00 CNY</td><td><span class="pill approved">Активен</span></td><td class="right"><button class="btn sm ghost" data-toast="Выписка|A003|info">Выписка</button></td></tr>
+      <tr><td class="tbl-id">A004</td><td class="mono">NOSTRO</td><td class="mono">GBP</td><td class="mono">30114-826-00000000111</td><td>HSBC London</td><td class="num">3 450 000,00 GBP</td><td><span class="pill approved">Активен</span></td><td class="right"><button class="btn sm ghost" data-toast="Выписка|A004|info">Выписка</button></td></tr>
+      <tr><td class="tbl-id">A005</td><td class="mono">NOSTRO</td><td class="mono">CHF</td><td class="mono">30114-756-00000000222</td><td>UBS AG</td><td class="num">2 100 400,10 CHF</td><td><span class="pill approved">Активен</span></td><td class="right"><button class="btn sm ghost" data-toast="Выписка|A005|info">Выписка</button></td></tr>
+      <tr><td class="tbl-id">A006</td><td class="mono">NOSTRO</td><td class="mono">RUB</td><td class="mono">30102-810-30000000001</td><td>Банк России</td><td class="num">4 200 500 000,00 RUB</td><td><span class="pill approved">Активен</span></td><td class="right"><button class="btn sm ghost" data-toast="Выписка|A006|info">Выписка</button></td></tr>
+    </tbody>
+  </table>
+</div>
+
+    </section>
+  </main>
+</div>
+
+<div id="toast-stack" class="toast-stack"></div>
+<div id="modal-mount"></div>
+
+<script src="js/app.js"></script>
+</body>
+</html>
