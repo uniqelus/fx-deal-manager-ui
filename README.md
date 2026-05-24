@@ -6,19 +6,22 @@
 
 **Стек:** HTML + CSS + ванильный JS. Без сборки. Без npm.
 
+**Auth (этап 0):** реальный login через [identity-provider](../identity-provider) (`POST /api/v1/auth/login`), JWT в `sessionStorage`, имя пользователя из токена.
+
 **Шрифты:** Fraunces (Google Fonts), Geist, Geist Mono — подгружаются с `fonts.googleapis.com`.
 
 ## Быстрый старт
 
-Любой HTTP-сервер из корня репозитория:
-
 ```bash
-python3 -m http.server 8765
+# IdP и API — см. README fx-deal-manager
+python3 -m http.server 5173
 ```
 
-Открыть в браузере: [http://localhost:8765/](http://localhost:8765/)
+Открыть в браузере: [http://localhost:5173/](http://localhost:5173/)
 
-Точка входа — `index.html` (страница логина с выбором роли).
+Точка входа — `index.html` (email/пароль через identity-provider).
+
+Демо: `trader@demo.local` / `DemoPassword1!` (создать через `scripts/seed-demo-users.sh` в fx-deal-manager).
 
 ## Структура проекта
 
@@ -35,7 +38,10 @@ fx-deal-manager-ui/
 ├── notifications.html          # уведомления
 ├── settings.html               # настройки пользователя
 ├── css/                        # стили
-└── js/app.js                   # единственный JS-файл
+├── js/
+│   ├── config.js               # IDP_URL, API_URL
+│   ├── api.js                  # JWT login, refresh, apiFetch
+│   └── app.js                  # shell, guards, handlers
 ```
 
 ### HTML-страницы

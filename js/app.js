@@ -1,29 +1,51 @@
 /* Shared UI helpers across all pages.
+   - Auth via identity-provider JWT (sessionStorage)
    - Sidebar nav: role-based show/hide + active highlight + dynamic dashboard link
    - Topbar clock
    - Toast helper
    - Modal helper
-   - Button handlers via data-* attributes:
-       data-toast="title|desc|kind"          -> show toast
-       data-go="page.html"                    -> redirect
-       data-confirm="title|body|action-label" -> open confirm modal then toast 'submitted'
-       data-logout                            -> clear role, go to index.html
+   - Button handlers via data-* attributes
 */
 
 (function () {
-  // ===== Role helpers =====
-  const ROLE_LABEL = { trader: 'Трейдер', positioner: 'Позиционер', auditor: 'Аудитор' };
-  const ROLE_USER = {
-    trader:     { name: 'Илья Смирнов',   login: 'i.smirnov',  initials: 'ИС', dept: 'FX-деск' },
-    positioner: { name: 'Софья Борисова', login: 's.borisova', initials: 'СБ', dept: 'Казначейство' },
-    auditor:    { name: 'Глеб Павлюк',    login: 'g.pavlyuk',  initials: 'ГП', dept: 'Внутр. аудит' },
+  const ROLE_LABEL = {
+    trader: 'Трейдер',
+    positioner: 'Позиционер',
+    auditor: 'Аудитор',
+    admin: 'Администратор',
   };
 
   function getRole() {
+    if (window.fxApi && window.fxApi.isAuthenticated()) {
+      const user = window.fxApi.getUserFromToken();
+      if (user) return window.fxApi.mapRoleToUi(user.role);
+    }
     return localStorage.getItem('fx_role') || 'trader';
   }
-  function setRole(r) { localStorage.setItem('fx_role', r); }
-  function clearRole() { localStorage.removeItem('fx_role'); }
+
+  function setRole(r) {
+    localStorage.setItem('fx_role', r);
+  }
+
+  function clearRole() {
+    localStorage.removeItem('fx_role');
+  }
+
+  function getRoleUser() {
+    if (window.fxApi && window.fxApi.isAuthenticated()) {
+      const user = window.fxApi.getUserFromToken();
+      if (user) {
+        const initials = (user.firstName[0] || '') + (user.lastName[0] || '');
+        return {
+          name: user.fullName || user.email,
+          login: user.email,
+          initials: initials.toUpperCase() || '?',
+          dept: user.role,
+        };
+      }
+    }
+    return null;
+  }
 
   // ===== Toast =====
   function toast(title, desc, kind) {
@@ -100,22 +122,19 @@
   // ===== Sidebar / shell setup =====
   function setupShell() {
     const role = getRole();
-    const roleUser = ROLE_USER[role];
+    const roleUser = getRoleUser();
 
-    // user widget
     const av = document.getElementById('side-user-av');
     const un = document.getElementById('side-user-name');
     const ur = document.getElementById('side-user-role');
     if (av && roleUser) av.textContent = roleUser.initials;
     if (un && roleUser) un.textContent = roleUser.name;
-    if (ur) ur.textContent = ROLE_LABEL[role] || '';
+    if (ur) ur.textContent = ROLE_LABEL[role] || roleUser?.dept || '';
 
-    // dashboard link points to role-specific page
     document.querySelectorAll('.side-nav-link[data-page="dashboard"]').forEach(a => {
       a.href = 'dashboard-' + role + '.html';
     });
 
-    // hide sidebar items not for current role
     document.querySelectorAll('.side-nav-link[data-roles]').forEach(a => {
       const allowed = a.dataset.roles.split(',');
       if (!allowed.includes(role)) a.style.display = 'none';
@@ -125,10 +144,45 @@
       if (!allowed.includes(role)) s.style.display = 'none';
     });
 
-    // active link
     const cur = document.body.dataset.page;
     if (cur) {
       document.querySelectorAll('.side-nav-link[data-page="' + cur + '"]').forEach(a => a.classList.add('active'));
+    }
+  }
+
+  function setupLoginPage() {
+    const form = document.getElementById('login-form');
+    if (!form || !window.fxApi) return;
+
+    if (window.fxApi.isAuthenticated()) {
+      const role = getRole();
+      location.href = 'dashboard-' + role + '.html';
+      return;
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+      const btn = form.querySelector('button[type="submit"]');
+      btn.disabled = true;
+      try {
+        const user = await window.fxApi.login(email, password);
+        const uiRole = window.fxApi.mapRoleToUi(user.role);
+        setRole(uiRole);
+        toast('Добро пожаловать', user.fullName || user.email, 'success');
+        location.href = 'dashboard-' + uiRole + '.html';
+      } catch (err) {
+        toast('Ошибка входа', err.message || 'Проверьте email и пароль', 'danger');
+        btn.disabled = false;
+      }
+    });
+  }
+
+  function enforceAuthGuard() {
+    if (document.body.dataset.page === 'login') return;
+    if (!window.fxApi || !window.fxApi.isAuthenticated()) {
+      location.href = 'index.html';
     }
   }
 
@@ -167,6 +221,7 @@
           actions: [
             { label: 'Отмена' },
             { label: 'Выйти', kind: 'primary', handler: () => {
+              if (window.fxApi) window.fxApi.logout();
               clearRole();
               location.href = 'index.html';
             } },
@@ -177,7 +232,6 @@
     document.querySelectorAll('[data-back]').forEach(b => {
       b.addEventListener('click', () => history.back());
     });
-    // chip filter visual toggle (UI only)
     document.querySelectorAll('.filter-bar [data-group]').forEach(b => {
       b.addEventListener('click', () => {
         const grp = b.dataset.group;
@@ -185,7 +239,6 @@
         b.classList.add('on');
       });
     });
-    // tab visual toggle (UI only)
     document.querySelectorAll('[data-tab-group]').forEach(b => {
       b.addEventListener('click', () => {
         const grp = b.dataset.tabGroup;
@@ -193,15 +246,7 @@
         b.classList.add('on');
       });
     });
-    // role select on login
-    document.querySelectorAll('[data-role-select]').forEach(b => {
-      b.addEventListener('click', () => {
-        const r = b.dataset.roleSelect;
-        setRole(r);
-        location.href = 'dashboard-' + r + '.html';
-      });
-    });
-    // role guard - any page with body[data-role-required] redirects to its dashboard if mismatch
+
     const required = document.body.dataset.roleRequired;
     if (required) {
       const allowed = required.split(',');
@@ -213,13 +258,13 @@
     }
   }
 
-  // ===== Init =====
   document.addEventListener('DOMContentLoaded', () => {
+    enforceAuthGuard();
+    setupLoginPage();
     setupShell();
     attachHandlers();
   });
 
-  // expose for inline scripts on pages that need them
   window.fxToast = toast;
   window.fxModal = modal;
   window.fxRole = { get: getRole, set: setRole, clear: clearRole };
