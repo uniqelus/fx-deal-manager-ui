@@ -34,12 +34,20 @@ python3 -m http.server 5173
 docker compose up -d --build
 ```
 
-Контейнер отдаёт всю статику, делает gzip, выставляет базовые security-заголовки, имеет `/healthz` и проксирует `/api/*` на upstream из переменной `API_UPSTREAM` (по умолчанию `api:8000`). Имя upstream разрешается лениво через Docker DNS (`127.0.0.11`), так что nginx стартует и без живого API.
+Контейнер отдаёт всю статику, делает gzip, выставляет базовые security-заголовки, имеет `/healthz` и проксирует два upstream-а:
+
+- `/api/*` -> `${API_UPSTREAM}` (по умолчанию `api:8000`) - fx-deal-manager
+- `/auth/*` -> `${IDP_UPSTREAM}` (по умолчанию `identity-provider:8080`) - identity-provider
+
+Имена upstream разрешаются лениво через Docker DNS (`127.0.0.11`), так что nginx стартует и без живых бэкендов.
+
+Браузер по умолчанию ходит на относительные пути (`/auth/...` и `/api/...`), поэтому неважно, на каком хосте/порту слушает UI - все запросы идут через nginx того же origin. Это убирает CORS и не зависит от того, что у пользователя в браузерной адресной строке.
 
 Переменные окружения compose:
 
 - `UI_PORT` (по умолчанию `5173`) - хостовый порт.
 - `API_UPSTREAM` (по умолчанию `host.docker.internal:8000`) - адрес fx-deal-manager API в формате `host:port`.
+- `IDP_UPSTREAM` (по умолчанию `host.docker.internal:8083`) - адрес identity-provider в формате `host:port`.
 
 Совместно с fx-deal-manager:
 

@@ -7,6 +7,7 @@ services:
       - "${UI_PORT:-5173}:80"
     environment:
       API_UPSTREAM: ${API_UPSTREAM:-host.docker.internal:8000}
+      IDP_UPSTREAM: ${IDP_UPSTREAM:-host.docker.internal:8083}
     extra_hosts:
       - "host.docker.internal:host-gateway"
     restart: unless-stopped
