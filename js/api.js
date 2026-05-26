@@ -141,17 +141,107 @@
     return Boolean(getAccessToken());
   }
 
+  async function apiJson(path, options) {
+    const res = await apiFetch(path, options);
+    let body = null;
+    const text = await res.text();
+    if (text) {
+      try {
+        body = JSON.parse(text);
+      } catch (_) {
+        body = text;
+      }
+    }
+    if (!res.ok) {
+      const message = (body && (body.detail || body.message)) || res.statusText;
+      const err = new Error(typeof message === 'string' ? message : JSON.stringify(message));
+      err.status = res.status;
+      err.body = body;
+      throw err;
+    }
+    return body;
+  }
+
+  function qs(params) {
+    const entries = Object.entries(params || {}).filter(
+      ([, v]) => v !== undefined && v !== null && v !== ''
+    );
+    if (!entries.length) return '';
+    return '?' + entries.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&');
+  }
+
+  const deals = {
+    list: (filters) => apiJson('/api/v1/deals' + qs(filters)),
+    get: (id) => apiJson('/api/v1/deals/' + id),
+    create: (payload) => apiJson('/api/v1/deals', { method: 'POST', body: JSON.stringify(payload) }),
+    update: (id, payload) =>
+      apiJson('/api/v1/deals/' + id, { method: 'PATCH', body: JSON.stringify(payload) }),
+    validate: (id) => apiJson('/api/v1/deals/' + id + '/validate', { method: 'POST' }),
+    submit: (id) => apiJson('/api/v1/deals/' + id + '/submit', { method: 'POST' }),
+    approve: (id) => apiJson('/api/v1/deals/' + id + '/approve', { method: 'POST' }),
+    returnForEdit: (id, comment) =>
+      apiJson('/api/v1/deals/' + id + '/return', { method: 'POST', body: JSON.stringify({ comment }) }),
+    reject: (id, comment) =>
+      apiJson('/api/v1/deals/' + id + '/reject', {
+        method: 'POST',
+        body: comment ? JSON.stringify({ comment }) : undefined,
+      }),
+    takeForEdit: (id) => apiJson('/api/v1/deals/' + id + '/take-for-edit', { method: 'POST' }),
+    cancel: (id, comment) =>
+      apiJson('/api/v1/deals/' + id + '/cancel', {
+        method: 'POST',
+        body: comment ? JSON.stringify({ comment }) : undefined,
+      }),
+    queue: (filters) => apiJson('/api/v1/deals/queue' + qs(filters)),
+  };
+
+  const nsi = {
+    counterparties: () => apiJson('/api/v1/nsi/counterparties'),
+    currencies: () => apiJson('/api/v1/nsi/currencies'),
+    nostro: (currencyCode) => apiJson('/api/v1/nsi/nostro-accounts' + qs({ currency_code: currencyCode })),
+    sync: () => apiJson('/api/v1/nsi/sync', { method: 'POST' }),
+  };
+
+  const audit = {
+    list: (filters) => apiJson('/api/v1/audit-events' + qs(filters)),
+  };
+
+  const reports = {
+    dealsJson: (filters) => apiJson('/api/v1/reports/deals' + qs({ ...filters, format: 'json' })),
+    dealsCsvUrl: (filters) => cfg().API_URL + '/api/v1/reports/deals' + qs({ ...filters, format: 'csv' }),
+    downloadDealsCsv: async (filters) => {
+      const res = await apiFetch('/api/v1/reports/deals' + qs({ ...filters, format: 'csv' }));
+      if (!res.ok) throw new Error('Не удалось получить отчёт');
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `deals_report_${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    },
+  };
+
+  const me = {
+    get: () => apiJson('/api/v1/me'),
+  };
+
   window.fxApi = {
     login,
     logout,
     apiFetch,
+    apiJson,
     getAccessToken,
     getUserFromToken,
     mapRoleToUi,
     isAuthenticated,
     clearTokens,
-    endpoints,
-    idpUrl,
-    apiUrl,
+    deals,
+    nsi,
+    audit,
+    reports,
+    me,
   };
 })();

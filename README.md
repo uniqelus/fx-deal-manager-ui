@@ -8,6 +8,8 @@
 
 **Auth (этап 0):** реальный login через [identity-provider](../identity-provider) (`POST /api/v1/auth/login`), JWT в `sessionStorage`, имя пользователя из токена.
 
+**Data binding (этап 5):** при наличии работающего fx-deal-manager UI динамически загружает реальные данные (сделки, очередь согласования, журнал аудита, контрагенты, счета НОСТРО) через `js/views.js`. Если бэкенд недоступен - выводится короткое предупреждение и страница остаётся в моковом виде, что сохраняет демонстрационные возможности без поднятого стека.
+
 **Шрифты:** Fraunces (Google Fonts), Geist, Geist Mono — подгружаются с `fonts.googleapis.com`.
 
 ## Быстрый старт
@@ -73,8 +75,9 @@ fx-deal-manager-ui/
 ├── css/                        # стили
 ├── js/
 │   ├── config.js               # IDP_URL, API_URL
-│   ├── api.js                  # JWT login, refresh, apiFetch
-│   └── app.js                  # shell, guards, handlers
+│   ├── api.js                  # JWT login, refresh, apiFetch + fxApi.{deals,nsi,audit,reports,me}
+│   ├── app.js                  # shell, guards, handlers
+│   └── views.js                # динамическая отрисовка реестра/очереди/аудита/НСИ
 ```
 
 ### HTML-страницы
@@ -110,6 +113,10 @@ fx-deal-manager-ui/
 | `components.css` | Кнопки, пилюли статусов, карточки, формы, вкладки, тосты, модалки. |
 | `tables.css` | Таблицы, фильтр-бары, пагинация, компактные списки `.mini-list`. |
 | `views.css` | Стили страниц: KPI, hero сделки, stepper, таймлайн аудита, sparkline, адаптив. |
+
+### `js/views.js` (этап 5)
+
+Динамические рендереры для страниц, подключаются после `app.js`. Каждая страница определяет себя по `<body data-page="...">`. При наличии валидного JWT в `sessionStorage` страница вызывает соответствующий метод `fxApi.*` и подменяет содержимое таблиц. Поддерживаемые страницы: `deals`, `queue`, `audit`, `counterparties`, `accounts`, `deal-new`, `deal-detail`, `deal-review`, `reports`. На странице `deal-new` форма сабмитится в `POST /api/v1/deals`; кнопка "Отправить досрочно" дополнительно вызывает `validate` и `submit`. На `deal-review` действия Согласовать / Вернуть / Отклонить идут на соответствующие endpoint-ы; пустой комментарий при возврате блокируется. На `deal-detail` отображается hero по реальным данным и доступна отмена сделки. На `deals` и `reports` кнопка "Печать отчёта" / "Экспорт" вызывает `GET /api/v1/reports/deals?format=csv` и инициирует скачивание.
 
 ### `js/app.js`
 
