@@ -596,7 +596,8 @@
 
   async function renderPositionerDashboard() {
     const queue = await window.fxApi.deals.queue({ page_size: 100 });
-    const items = (queue && queue.items) || [];
+    // queue endpoint returns a bare array; deals.list returns { items, total, ... }
+    const items = Array.isArray(queue) ? queue : (queue && queue.items) || [];
     const today = new Date().toISOString().slice(0, 10);
     const newToday = items.filter((d) => (d.created_at || '').slice(0, 10) === today);
 
