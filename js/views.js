@@ -164,14 +164,43 @@
     await reload();
   }
 
+  function renderQueueRows(tbody, items) {
+    tbody.innerHTML = '';
+    if (!items.length) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td colspan="9" class="muted" style="text-align:center;padding:24px">Очередь пуста</td>`;
+      tbody.appendChild(tr);
+      return;
+    }
+    items.forEach((d) => {
+      const tr = document.createElement('tr');
+      const href = `deal-review.html?id=${d.id}`;
+      tr.dataset.go = href;
+      const shortId = (d.id || '').slice(0, 8).toUpperCase();
+      tr.innerHTML = `
+        <td class="tbl-id">D-${shortId}</td>
+        <td class="mono">${fmtTime(d.created_at)}</td>
+        <td><span class="tbl-pair">${d.buy_currency}</span><span class="tbl-pair-arrow">→</span><span class="tbl-pair">${d.sell_currency}</span></td>
+        <td class="mono">${d.deal_type}</td>
+        <td class="num">${fmtMoney(d.amount)}</td>
+        <td class="num">${fmtRate(d.rate)}</td>
+        <td class="tbl-cp">${d.counterparty_id}</td>
+        <td>${d.trader_email || (d.trader_id ? d.trader_id.slice(0, 8) : '-')}</td>
+        <td class="right"><button class="btn sm ghost" data-go="${href}">→</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+    bindRowsNavigate(tbody);
+  }
+
   async function initQueuePage() {
     if (!ensureApi()) return;
     const tbody = document.querySelector('table.tbl tbody');
     if (!tbody) return;
     try {
-      const items = await window.fxApi.deals.queue({ page_size: 50 });
-      renderDealsTable(tbody, items, { detailHref: (d) => `deal-review.html?id=${d.id}` });
-      bindRowsNavigate(tbody);
+      const queue = await window.fxApi.deals.queue({ page_size: 50 });
+      const items = Array.isArray(queue) ? queue : (queue && queue.items) || [];
+      renderQueueRows(tbody, items);
     } catch (e) {
       softWarn('Очередь: ' + e.message);
     }
@@ -595,33 +624,97 @@
   }
 
   async function renderPositionerDashboard() {
-    const queue = await window.fxApi.deals.queue({ page_size: 100 });
-    // queue endpoint returns a bare array; deals.list returns { items, total, ... }
-    const items = Array.isArray(queue) ? queue : (queue && queue.items) || [];
     const today = new Date().toISOString().slice(0, 10);
-    const newToday = items.filter((d) => (d.created_at || '').slice(0, 10) === today);
+    const queueResp = await window.fxApi.deals.queue({ page_size: 100 });
+    const queue = Array.isArray(queueResp) ? queueResp : (queueResp && queueResp.items) || [];
 
-    setKpi(pickKpiCard(0), items.length, 'шт', `${items.length}`, 'flat', 'в очереди');
-    setKpi(pickKpiCard(1), newToday.length, 'шт', `${newToday.length}`, 'flat', 'пришло сегодня');
-    setKpi(pickKpiCard(2), '-', '', '-', 'flat', 'среднее время согласования');
-    setKpi(pickKpiCard(3), '-', '', '-', 'flat', 'нарушено лимитов');
+    const safeList = async (status) => {
+      try {
+        const r = await window.fxApi.deals.list({ status, page_size: 100 });
+        return (r && r.items) || [];
+      } catch (_) {
+        return null;
+      }
+    };
+    const [approved, rejected, cancelled] = await Promise.all([
+      safeList('APPROVED'),
+      safeList('REJECTED'),
+      safeList('CANCELLED'),
+    ]);
+    const approvedToday = (approved || []).filter(
+      (d) => (d.updated_at || d.created_at || '').slice(0, 10) === today,
+    );
+
+    setKpi(pickKpiCard(0), queue.length, 'шт', `${queue.length}`, 'flat', 'на согласовании');
+    setKpi(
+      pickKpiCard(1),
+      approved ? approvedToday.length : '-',
+      'шт',
+      approved ? `${approvedToday.length}` : '-',
+      'flat',
+      'APPROVED сегодня',
+    );
+    setKpi(
+      pickKpiCard(2),
+      rejected ? rejected.length : '-',
+      '',
+      rejected ? `${rejected.length}` : '-',
+      'flat',
+      'возвращено всего',
+    );
+    setKpi(
+      pickKpiCard(3),
+      cancelled ? cancelled.length : '-',
+      '',
+      cancelled ? `${cancelled.length}` : '-',
+      'flat',
+      'отменено трейдером',
+    );
 
     const tbody = document.querySelector('.row-2 .card table tbody');
-    if (tbody) renderDashboardRecent(tbody, items.slice(0, 6));
+    if (tbody) renderDashboardRecent(tbody, queue.slice(0, 6));
   }
 
   async function renderAuditorDashboard() {
     const audit = await window.fxApi.audit.list({ page_size: 100 });
     const events = (audit && audit.items) || [];
-    const today = new Date().toISOString().slice(0, 10);
-    const todayEvents = events.filter((e) => (e.occurred_at || e.created_at || '').slice(0, 10) === today);
-    const creates = events.filter((e) => /CREATE/i.test(e.event_type || e.action || ''));
-    const statusChanges = events.filter((e) => /STATUS/i.test(e.event_type || e.action || ''));
+    const total = (audit && audit.total) != null ? audit.total : events.length;
 
-    setKpi(pickKpiCard(0), events.length, '', `${events.length}`, 'flat', 'всего событий');
-    setKpi(pickKpiCard(1), todayEvents.length, '', `${todayEvents.length}`, 'flat', 'за сегодня');
-    setKpi(pickKpiCard(2), creates.length, '', '-', 'flat', 'создания сделок');
-    setKpi(pickKpiCard(3), statusChanges.length, '', '-', 'flat', 'смены статусов');
+    const userEvents = events.filter((e) => !!e.created_by);
+    const systemEvents = events.filter((e) => !e.created_by);
+    const uniqueUsers = new Set(userEvents.map((e) => e.created_by)).size;
+    const today = new Date().toISOString().slice(0, 10);
+    const todayEvents = events.filter(
+      (e) => (e.occurred_at || e.created_at || '').slice(0, 10) === today,
+    );
+
+    setKpi(pickKpiCard(0), total, '', `${total}`, 'flat', 'всего событий');
+    setKpi(
+      pickKpiCard(1),
+      userEvents.length,
+      '',
+      `${uniqueUsers}`,
+      'flat',
+      uniqueUsers === 1 ? 'пользователь' : 'уникальных пользователей',
+    );
+    setKpi(
+      pickKpiCard(2),
+      systemEvents.length,
+      '',
+      '-',
+      'flat',
+      'без явного актора',
+    );
+    // No anomaly detection in the backend yet; show '-' and surface today-count
+    // in the meta line so the data isn't lost.
+    setKpi(
+      pickKpiCard(3),
+      '-',
+      '',
+      `${todayEvents.length}`,
+      'flat',
+      'событий за сегодня',
+    );
   }
 
   async function initDashboardPage() {
