@@ -50,7 +50,8 @@ server {
     location /auth/ {
         resolver 127.0.0.11 ipv6=off valid=10s;
         set $fx_idp_upstream "${IDP_UPSTREAM}";
-        proxy_pass http://$fx_idp_upstream/;
+        rewrite ^/auth/(.*)$ /$1 break;
+        proxy_pass http://$fx_idp_upstream;
         proxy_set_header Host $host;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
