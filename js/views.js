@@ -498,9 +498,149 @@
     }
   }
 
+  function greetingFor(date) {
+    const h = date.getHours();
+    if (h < 5) return 'Доброй ночи';
+    if (h < 12) return 'Доброе утро';
+    if (h < 18) return 'Добрый день';
+    return 'Добрый вечер';
+  }
+
+  function applyDashboardGreeting(user) {
+    const title = document.querySelector('.page-title');
+    if (!title) return;
+    const name = (user && (user.firstName || user.first_name)) || (user && user.email) || 'коллега';
+    title.textContent = `${greetingFor(new Date())}, ${name}.`;
+  }
+
+  function fmtVolumeRub(rub) {
+    if (rub >= 1e9) return { val: (rub / 1e9).toFixed(2).replace('.', ','), unit: 'млрд' };
+    if (rub >= 1e6) return { val: (rub / 1e6).toFixed(1).replace('.', ','), unit: 'млн' };
+    if (rub >= 1e3) return { val: (rub / 1e3).toFixed(0), unit: 'тыс' };
+    return { val: Math.round(rub).toString(), unit: '' };
+  }
+
+  function setKpi(card, value, unit, deltaText, deltaCls, metaText) {
+    if (!card) return;
+    const valEl = card.querySelector('.kpi-value');
+    if (valEl) valEl.innerHTML = `${value}${unit ? `<span class="kpi-unit">${unit}</span>` : ''}`;
+    const metaEl = card.querySelector('.kpi-meta');
+    if (metaEl) metaEl.innerHTML = `<span class="kpi-delta ${deltaCls || 'flat'}">${deltaText}</span><span>${metaText}</span>`;
+  }
+
+  function renderDashboardRecent(tbody, items) {
+    tbody.innerHTML = '';
+    if (!items.length) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td colspan="8" class="muted" style="text-align:center;padding:24px">Сделок пока нет</td>`;
+      tbody.appendChild(tr);
+      return;
+    }
+    items.forEach((d) => {
+      const tr = document.createElement('tr');
+      const href = `deal-detail.html?id=${d.id}`;
+      tr.dataset.go = href;
+      const pill = pillFor(d.status);
+      const shortId = (d.id || '').slice(0, 8).toUpperCase();
+      tr.innerHTML = `
+        <td class="tbl-id">D-${shortId}</td>
+        <td class="mono">${fmtTime(d.created_at)}</td>
+        <td><span class="tbl-pair">${d.buy_currency}</span><span class="tbl-pair-arrow">→</span><span class="tbl-pair">${d.sell_currency}</span></td>
+        <td class="mono">${d.deal_type}</td>
+        <td class="num">${fmtMoney(d.amount)}</td>
+        <td class="num">${fmtRate(d.rate)}</td>
+        <td><span class="${pill.cls}">${pill.label}</span></td>
+        <td class="right"><button class="btn sm ghost" data-go="${href}">→</button></td>
+      `;
+      tbody.appendChild(tr);
+    });
+    bindRowsNavigate(tbody);
+  }
+
+  function pickKpiCard(idx) {
+    return document.querySelectorAll('.kpi-grid .kpi-card')[idx];
+  }
+
+  async function renderTraderDashboard() {
+    const payload = await window.fxApi.deals.list({ page_size: 100 });
+    const items = (payload && payload.items) || [];
+    const today = new Date().toISOString().slice(0, 10);
+
+    const todayDeals = items.filter((d) => (d.trade_date || '').slice(0, 10) === today);
+    const inProgress = items.filter((d) => d.status === 'WAITING_FOR_POSITIONER' || d.status === 'DRAFT');
+    const rejected = items.filter((d) => d.status === 'REJECTED' || d.status === 'CANCELLED');
+
+    let volumeRub = 0;
+    items.forEach((d) => {
+      const amt = Number(d.amount) || 0;
+      const rate = Number(d.rate) || 0;
+      if (d.sell_currency === 'RUB') volumeRub += amt * rate;
+      else if (d.buy_currency === 'RUB') volumeRub += amt;
+    });
+    const v = fmtVolumeRub(volumeRub);
+
+    setKpi(pickKpiCard(0), todayDeals.length, 'шт', `${todayDeals.length}`, 'flat', 'создано сегодня');
+    setKpi(pickKpiCard(1), v.val, v.unit, '-', 'flat', 'оборот за все время');
+    setKpi(pickKpiCard(2), inProgress.length, '', `${inProgress.length}`, 'flat', 'DRAFT + на согласовании');
+    setKpi(pickKpiCard(3), rejected.length, '', `${rejected.length}`, 'flat', 'возвращено / отменено');
+
+    const tbody = document.querySelector('.row-2 .card table tbody');
+    if (tbody) {
+      const recent = items
+        .slice()
+        .sort((a, b) => (b.created_at || '').localeCompare(a.created_at || ''))
+        .slice(0, 6);
+      renderDashboardRecent(tbody, recent);
+    }
+  }
+
+  async function renderPositionerDashboard() {
+    const queue = await window.fxApi.deals.queue({ page_size: 100 });
+    const items = (queue && queue.items) || [];
+    const today = new Date().toISOString().slice(0, 10);
+    const newToday = items.filter((d) => (d.created_at || '').slice(0, 10) === today);
+
+    setKpi(pickKpiCard(0), items.length, 'шт', `${items.length}`, 'flat', 'в очереди');
+    setKpi(pickKpiCard(1), newToday.length, 'шт', `${newToday.length}`, 'flat', 'пришло сегодня');
+    setKpi(pickKpiCard(2), '-', '', '-', 'flat', 'среднее время согласования');
+    setKpi(pickKpiCard(3), '-', '', '-', 'flat', 'нарушено лимитов');
+
+    const tbody = document.querySelector('.row-2 .card table tbody');
+    if (tbody) renderDashboardRecent(tbody, items.slice(0, 6));
+  }
+
+  async function renderAuditorDashboard() {
+    const audit = await window.fxApi.audit.list({ page_size: 100 });
+    const events = (audit && audit.items) || [];
+    const today = new Date().toISOString().slice(0, 10);
+    const todayEvents = events.filter((e) => (e.occurred_at || e.created_at || '').slice(0, 10) === today);
+    const creates = events.filter((e) => /CREATE/i.test(e.event_type || e.action || ''));
+    const statusChanges = events.filter((e) => /STATUS/i.test(e.event_type || e.action || ''));
+
+    setKpi(pickKpiCard(0), events.length, '', `${events.length}`, 'flat', 'всего событий');
+    setKpi(pickKpiCard(1), todayEvents.length, '', `${todayEvents.length}`, 'flat', 'за сегодня');
+    setKpi(pickKpiCard(2), creates.length, '', '-', 'flat', 'создания сделок');
+    setKpi(pickKpiCard(3), statusChanges.length, '', '-', 'flat', 'смены статусов');
+  }
+
+  async function initDashboardPage() {
+    const user = (window.fxApi && window.fxApi.getUserFromToken && window.fxApi.getUserFromToken()) || null;
+    applyDashboardGreeting(user || {});
+    if (!ensureApi()) return;
+    try {
+      const role = (user && user.role) || 'TRADER';
+      if (role === 'TRADER') await renderTraderDashboard();
+      else if (role === 'POSITIONER') await renderPositionerDashboard();
+      else if (role === 'AUDITOR' || role === 'ADMIN') await renderAuditorDashboard();
+    } catch (e) {
+      softWarn('Дашборд: ' + e.message);
+    }
+  }
+
   function bootstrap() {
     const page = document.body.dataset.page;
     const map = {
+      dashboard: initDashboardPage,
       deals: initDealsPage,
       queue: initQueuePage,
       audit: initAuditPage,
