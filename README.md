@@ -25,6 +25,31 @@ python3 -m http.server 5173
 
 Демо: `trader@demo.local` / `DemoPassword1!` (создать через `scripts/seed-demo-users.sh` в fx-deal-manager).
 
+## Docker
+
+В репозитории есть `Dockerfile` (nginx:1.27-alpine со статикой внутри) и `docker-compose.yml` для standalone-запуска.
+
+```bash
+# standalone (UI слушает 5173, /api проксируется на host.docker.internal:8000)
+docker compose up -d --build
+```
+
+Контейнер отдаёт всю статику, делает gzip, выставляет базовые security-заголовки, имеет `/healthz` и проксирует `/api/*` на upstream из переменной `API_UPSTREAM` (по умолчанию `api:8000`). Имя upstream разрешается лениво через Docker DNS (`127.0.0.11`), так что nginx стартует и без живого API.
+
+Переменные окружения compose:
+
+- `UI_PORT` (по умолчанию `5173`) - хостовый порт.
+- `API_UPSTREAM` (по умолчанию `host.docker.internal:8000`) - адрес fx-deal-manager API в формате `host:port`.
+
+Совместно с fx-deal-manager:
+
+```bash
+# в fx-deal-manager:
+docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+```
+
+Этот вариант (`docker-compose.dev.yml` в fx-deal-manager) монтирует статику бинд-маунтом из соседнего checkout-а. Локальный `Dockerfile` нужен для самодостаточного образа - без бинд-маунта и без зависимости от расположения каталогов.
+
 ## Структура проекта
 
 ```

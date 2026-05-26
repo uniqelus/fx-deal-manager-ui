@@ -1,0 +1,12 @@
+services:
+  ui:
+    build: .
+    image: fx-deal-manager-ui:local
+    container_name: fx-deal-manager-ui
+    ports:
+      - "${UI_PORT:-5173}:80"
+    environment:
+      API_UPSTREAM: ${API_UPSTREAM:-host.docker.internal:8000}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
