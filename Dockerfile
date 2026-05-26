@@ -12,7 +12,8 @@ RUN rm -f \
  && find /usr/share/nginx/html -type d -exec chmod 0755 {} \; \
  && find /usr/share/nginx/html -type f -exec chmod 0644 {} \;
 
-ENV API_UPSTREAM=api:8000
+ENV API_UPSTREAM=api:8000 \
+    IDP_UPSTREAM=identity-provider:8080
 
 EXPOSE 80
 

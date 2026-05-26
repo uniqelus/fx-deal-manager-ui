@@ -2,8 +2,31 @@
   const ACCESS_KEY = 'fx_access_token';
   const REFRESH_KEY = 'fx_refresh_token';
 
+  const FALLBACK_CFG = {
+    IDP_URL: '/auth',
+    API_URL: '',
+    ENDPOINTS: {
+      idp: {
+        login: '/api/v1/auth/login',
+        refresh: '/api/v1/auth/refresh',
+      },
+    },
+  };
+
   function cfg() {
-    return window.FX_CONFIG || { IDP_URL: 'http://localhost:8083', API_URL: 'http://localhost:8000' };
+    return window.FX_CONFIG || FALLBACK_CFG;
+  }
+
+  function endpoints() {
+    return (cfg().ENDPOINTS) || FALLBACK_CFG.ENDPOINTS;
+  }
+
+  function idpUrl(path) {
+    return (cfg().IDP_URL || '') + path;
+  }
+
+  function apiUrl(path) {
+    return (cfg().API_URL || '') + path;
   }
 
   function getAccessToken() {
@@ -55,7 +78,7 @@
   }
 
   async function login(email, password) {
-    const res = await fetch(cfg().IDP_URL + '/api/v1/auth/login', {
+    const res = await fetch(idpUrl(endpoints().idp.login), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
@@ -72,7 +95,7 @@
   async function refreshAccessToken() {
     const refreshToken = getRefreshToken();
     if (!refreshToken) throw new Error('No refresh token');
-    const res = await fetch(cfg().IDP_URL + '/api/v1/auth/refresh', {
+    const res = await fetch(idpUrl(endpoints().idp.refresh), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ refreshToken }),
@@ -92,13 +115,13 @@
     const token = getAccessToken();
     if (token) headers.Authorization = 'Bearer ' + token;
 
-    let res = await fetch(cfg().API_URL + path, Object.assign({}, options, { headers }));
+    let res = await fetch(apiUrl(path), Object.assign({}, options, { headers }));
 
     if (res.status === 401 && getRefreshToken()) {
       try {
         const newToken = await refreshAccessToken();
         headers.Authorization = 'Bearer ' + newToken;
-        res = await fetch(cfg().API_URL + path, Object.assign({}, options, { headers }));
+        res = await fetch(apiUrl(path), Object.assign({}, options, { headers }));
       } catch (_) {
         clearTokens();
         location.href = 'index.html';
@@ -127,5 +150,8 @@
     mapRoleToUi,
     isAuthenticated,
     clearTokens,
+    endpoints,
+    idpUrl,
+    apiUrl,
   };
 })();
