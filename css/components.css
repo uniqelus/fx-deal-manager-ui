@@ -235,7 +235,7 @@
   color: var(--ink-2);
   position: relative;
 }
-.radio-row label.on { background: var(--ink); color: white; }
+.radio-row label:has(input:checked) { background: var(--ink); color: white; }
 .radio-row input { display: none; }
 .radio-row-sub {
   font-size: 10.5px;
@@ -245,7 +245,7 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
 }
-.radio-row label.on .radio-row-sub { color: rgba(255,255,255,0.7); }
+.radio-row label:has(input:checked) .radio-row-sub { color: rgba(255,255,255,0.7); }
 
 /* tabs */
 .tabs {

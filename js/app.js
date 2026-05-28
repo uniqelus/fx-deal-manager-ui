@@ -247,6 +247,20 @@
       });
     });
 
+    document.querySelectorAll('.side-search input').forEach(inp => {
+      inp.addEventListener('keydown', e => {
+        if (e.key !== 'Enter') return;
+        const q = inp.value.trim();
+        location.href = 'deals.html' + (q ? '?search=' + encodeURIComponent(q) : '');
+      });
+    });
+    document.addEventListener('keydown', e => {
+      if ((e.metaKey || e.ctrlKey) && (e.key === 'k' || e.key === 'K')) {
+        const inp = document.querySelector('.side-search input');
+        if (inp) { e.preventDefault(); inp.focus(); }
+      }
+    });
+
     const required = document.body.dataset.roleRequired;
     if (required) {
       const allowed = required.split(',');
