@@ -50,7 +50,11 @@
   function decodeJwtPayload(token) {
     try {
       const part = token.split('.')[1];
-      const json = atob(part.replace(/-/g, '+').replace(/_/g, '/'));
+      const b64 = part.replace(/-/g, '+').replace(/_/g, '/');
+      const padded = b64 + '==='.slice((b64.length + 3) % 4);
+      const binary = atob(padded);
+      const bytes = Uint8Array.from(binary, (c) => c.charCodeAt(0));
+      const json = new TextDecoder('utf-8').decode(bytes);
       return JSON.parse(json);
     } catch (_) {
       return null;
