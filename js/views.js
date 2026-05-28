@@ -103,6 +103,67 @@
     });
   }
 
+  function renderPagination(card, data, onGo) {
+    const pag = card.querySelector('.pag');
+    if (!pag) return;
+    const total = data.total || 0;
+    const page = data.page || 1;
+    const pageSize = data.page_size || 20;
+    const totalPages = Math.max(1, Math.ceil(total / pageSize));
+
+    const span = pag.querySelector('span');
+    if (span) {
+      if (!total) {
+        span.textContent = 'Нет сделок';
+      } else {
+        const from = (page - 1) * pageSize + 1;
+        const to = Math.min(page * pageSize, total);
+        span.textContent = `Показано ${from}-${to} из ${total}`;
+      }
+    }
+
+    const pages = pag.querySelector('.pag-pages');
+    if (!pages) return;
+    pages.innerHTML = '';
+
+    const mkBtn = (label, target, opts) => {
+      opts = opts || {};
+      const b = document.createElement('button');
+      b.className = 'pag-page' + (opts.active ? ' on' : '');
+      b.textContent = label;
+      if (opts.disabled) {
+        b.disabled = true;
+      } else {
+        b.addEventListener('click', () => onGo(target));
+      }
+      return b;
+    };
+    const mkGap = () => {
+      const s = document.createElement('button');
+      s.className = 'pag-page';
+      s.textContent = '…';
+      s.disabled = true;
+      return s;
+    };
+
+    pages.appendChild(mkBtn('«', page - 1, { disabled: page <= 1 }));
+    const win = 2;
+    const start = Math.max(1, page - win);
+    const end = Math.min(totalPages, page + win);
+    if (start > 1) {
+      pages.appendChild(mkBtn('1', 1, {}));
+      if (start > 2) pages.appendChild(mkGap());
+    }
+    for (let p = start; p <= end; p += 1) {
+      pages.appendChild(mkBtn(String(p), p, { active: p === page }));
+    }
+    if (end < totalPages) {
+      if (end < totalPages - 1) pages.appendChild(mkGap());
+      pages.appendChild(mkBtn(String(totalPages), totalPages, {}));
+    }
+    pages.appendChild(mkBtn('»', page + 1, { disabled: page >= totalPages }));
+  }
+
   function buildFilters(scope) {
     const filters = { page_size: 50 };
     const search = scope.querySelector('.filter-search input');
@@ -144,13 +205,21 @@
       if (searchInput) searchInput.value = searchParam;
     }
 
+    const PAGE_SIZE = 20;
+    let currentPage = 1;
+
     async function reload() {
       try {
-        const data = await window.fxApi.deals.list(buildFilters(card));
+        const filters = buildFilters(card);
+        filters.page = currentPage;
+        filters.page_size = PAGE_SIZE;
+        const data = await window.fxApi.deals.list(filters);
         renderDealsTable(tbody, data.items || []);
         bindRowsNavigate(tbody);
-        const pag = card.querySelector('.pag span');
-        if (pag) pag.textContent = `Показано ${data.items.length} из ${data.total}`;
+        renderPagination(card, data, (p) => {
+          currentPage = p;
+          reload();
+        });
       } catch (e) {
         softWarn('Реестр сделок: ' + e.message);
       }
@@ -159,11 +228,15 @@
     if (filterBar) {
       filterBar.addEventListener('click', (e) => {
         if (e.target.classList.contains('chip')) {
+          currentPage = 1;
           setTimeout(reload, 0);
         }
       });
       filterBar.querySelectorAll('input').forEach((inp) => {
-        inp.addEventListener('change', reload);
+        inp.addEventListener('change', () => {
+          currentPage = 1;
+          reload();
+        });
       });
     }
 
