@@ -232,6 +232,11 @@
     get: () => apiJson('/api/v1/me'),
   };
 
+  const notifications = {
+    list: (filters) => apiJson('/api/v1/notifications' + qs(filters)),
+    markAllRead: () => apiJson('/api/v1/notifications/read-all', { method: 'POST' }),
+  };
+
   window.fxApi = {
     login,
     logout,
@@ -247,5 +252,6 @@
     audit,
     reports,
     me,
+    notifications,
   };
 })();

@@ -138,6 +138,12 @@
     const card = tbody.closest('.card');
     const filterBar = card.querySelector('.filter-bar');
 
+    const searchParam = new URLSearchParams(location.search).get('search');
+    if (searchParam) {
+      const searchInput = card.querySelector('.filter-search input');
+      if (searchInput) searchInput.value = searchParam;
+    }
+
     async function reload() {
       try {
         const data = await window.fxApi.deals.list(buildFilters(card));
@@ -509,6 +515,150 @@
     });
   }
 
+  const NOTIF_ICON = {
+    success: { cls: 'success', glyph: '✓' },
+    danger: { cls: 'danger', glyph: '×' },
+    warn: { cls: 'warn', glyph: '!' },
+    info: { cls: 'info', glyph: 'i' },
+  };
+
+  function notifTag(n) {
+    if (n.entity_type === 'FXDeal' && n.entity_id) return 'D-' + String(n.entity_id).slice(0, 8).toUpperCase();
+    if (n.entity_id) return String(n.entity_id).slice(0, 8).toUpperCase();
+    return '';
+  }
+
+  function renderNotifications(list, items) {
+    list.innerHTML = '';
+    if (!items.length) {
+      const empty = document.createElement('div');
+      empty.className = 'mini-row';
+      empty.innerHTML = `<div class="mini-c"><div class="mini-d muted" style="padding:8px">Уведомлений нет</div></div>`;
+      list.appendChild(empty);
+      return;
+    }
+    items.forEach((n) => {
+      const icon = NOTIF_ICON[n.kind] || NOTIF_ICON.info;
+      const row = document.createElement('div');
+      row.className = 'mini-row';
+      if (!n.read) row.style.background = 'rgba(99,91,255,0.04)';
+      const tag = notifTag(n);
+      row.innerHTML = `
+        <div class="mini-icon ${icon.cls}">${icon.glyph}</div>
+        <div class="mini-c">
+          <div class="mini-t"></div>
+          <div class="mini-d"></div>
+        </div>
+        <span class="mini-r"><div>${fmtTime(n.created_at)}</div>${tag ? `<div class="mono" style="margin-top:2px"></div>` : ''}</span>`;
+      row.querySelector('.mini-t').textContent = n.title || '';
+      row.querySelector('.mini-d').textContent = n.description || '';
+      if (tag) row.querySelector('.mini-r div:last-child').textContent = tag;
+      if (n.related_url) {
+        row.style.cursor = 'pointer';
+        row.addEventListener('click', () => { location.href = n.related_url; });
+      }
+      list.appendChild(row);
+    });
+  }
+
+  function notifMatches(filter, n) {
+    switch (filter) {
+      case 'Непрочитанные':
+        return !n.read;
+      case 'Сделки':
+        return n.entity_type === 'FXDeal';
+      case 'Лимиты':
+        return /лимит/i.test(n.title || '') || /лимит/i.test(n.description || '');
+      case 'Системные':
+        return n.entity_type !== 'FXDeal';
+      default:
+        return true;
+    }
+  }
+
+  function updateNotifCounts(data, items) {
+    const unread = (data && data.unread_count) || 0;
+    const total = data && data.total != null ? data.total : items.length;
+    document.querySelectorAll('.side-nav-link[data-page="notifications"] .side-nav-count').forEach((el) => {
+      el.textContent = unread;
+      el.style.display = unread ? '' : 'none';
+    });
+    document.querySelectorAll('header .badge').forEach((el) => {
+      el.textContent = unread;
+      el.style.display = unread ? '' : 'none';
+    });
+    const tabCounts = document.querySelectorAll('.tabs .tab[data-tab-group="notif"] .tab-count');
+    if (tabCounts[0]) tabCounts[0].textContent = total;
+    if (tabCounts[1]) tabCounts[1].textContent = unread;
+  }
+
+  function notify(title, desc, kind) {
+    const fn = window.fxToast || window.toast;
+    if (fn) fn(title, desc, kind);
+  }
+
+  async function initNotificationsPage() {
+    if (!ensureApi()) return;
+    const list = document.querySelector('.mini-list');
+    if (!list) return;
+    let allItems = [];
+    let activeFilter = 'Все';
+
+    function applyFilter() {
+      renderNotifications(list, allItems.filter((n) => notifMatches(activeFilter, n)));
+    }
+
+    document.querySelectorAll('.tabs .tab[data-tab-group="notif"]').forEach((tab) => {
+      tab.addEventListener(
+        'click',
+        (e) => {
+          e.stopImmediatePropagation();
+          document.querySelectorAll('.tabs .tab[data-tab-group="notif"]').forEach((t) => t.classList.remove('on'));
+          tab.classList.add('on');
+          activeFilter = (tab.textContent || '').trim().split(/\s+/)[0];
+          applyFilter();
+        },
+        true,
+      );
+    });
+
+    const markBtn = Array.from(document.querySelectorAll('button')).find((b) =>
+      /Отметить все прочитанными/i.test(b.textContent),
+    );
+
+    async function reload() {
+      try {
+        const data = await window.fxApi.notifications.list({ page_size: 50 });
+        allItems = (data && data.items) || [];
+        updateNotifCounts(data, allItems);
+        applyFilter();
+      } catch (e) {
+        softWarn('Уведомления: ' + e.message);
+      }
+    }
+
+    if (markBtn) {
+      markBtn.removeAttribute('data-toast');
+      markBtn.addEventListener(
+        'click',
+        async (e) => {
+          e.stopImmediatePropagation();
+          e.preventDefault();
+          try {
+            await window.fxApi.notifications.markAllRead();
+            await reload();
+            notify('Все прочитано', 'Уведомления отмечены прочитанными', 'success');
+          } catch (err) {
+            notify('Не удалось', err.message, 'danger');
+          }
+        },
+        true,
+      );
+    }
+
+    await reload();
+  }
+
   async function initReportsPage() {
     if (!ensureApi()) return;
     const printBtn = Array.from(document.querySelectorAll('button')).find((b) =>
@@ -744,6 +894,7 @@
       'deal-detail': initDealDetailPage,
       'deal-review': initDealReviewPage,
       reports: initReportsPage,
+      notifications: initNotificationsPage,
     };
     const init = map[page];
     if (init) init();
